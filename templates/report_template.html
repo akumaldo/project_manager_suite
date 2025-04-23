@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{{ project.name }} - Report</title>
+    <style>
+        @page {
+            margin: 1cm;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        .cover-page {
+            text-align: center;
+            padding: 50px 20px;
+            page-break-after: always;
+        }
+        .cover-page h1 {
+            font-size: 28px;
+            color: #6B46C1;
+            margin-bottom: 20px;
+        }
+        .cover-page p {
+            margin-bottom: 5px;
+        }
+        .toc {
+            page-break-after: always;
+            padding: 20px;
+        }
+        .toc h2 {
+            color: #6B46C1;
+            margin-bottom: 20px;
+        }
+        .toc ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .toc li {
+            margin-bottom: 10px;
+        }
+        .toc li a {
+            text-decoration: none;
+            color: #333;
+        }
+        .section {
+            padding: 20px;
+            page-break-after: always;
+        }
+        .section:last-child {
+            page-break-after: avoid;
+        }
+        .section h2 {
+            color: #6B46C1;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table th {
+            background-color: #f5f5f5;
+            text-align: left;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        .csd-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-gap: 20px;
+            margin-bottom: 20px;
+        }
+        .csd-column {
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+        .csd-column h3 {
+            margin-top: 0;
+            color: #6B46C1;
+        }
+        .bmc-grid {
+            display: grid;
+            grid-template-columns: 20% 20% 20% 20% 20%;
+            grid-template-rows: auto auto auto;
+            grid-gap: 10px;
+            margin-bottom: 20px;
+        }
+        .bmc-cell {
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+        .bmc-cell h4 {
+            margin-top: 0;
+            color: #6B46C1;
+        }
+        .progress-bar {
+            width: 100%;
+            background-color: #f3f3f3;
+            height: 20px;
+            margin-bottom: 5px;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background-color: #6B46C1;
+        }
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+{% if include_cover_page %}
+<!-- Cover Page -->
+<div class="cover-page">
+    <h1>{{ project.name }}</h1>
+    <p><strong>Project Report</strong></p>
+    <p>Generated on: {{ generated_at }}</p>
+</div>
+{% endif %}
+
+{% if include_toc %}
+<!-- Table of Contents -->
+<div class="toc">
+    <h2>Table of Contents</h2>
+    <ul>
+        {% if 'csd' in frameworks %}<li><a href="#csd">CSD Matrix</a></li>{% endif %}
+        {% if 'pvb' in frameworks %}<li><a href="#pvb">Product Vision Board</a></li>{% endif %}
+        {% if 'bmc' in frameworks %}<li><a href="#bmc">Business Model Canvas</a></li>{% endif %}
+        {% if 'rice' in frameworks %}<li><a href="#rice">RICE Prioritization</a></li>{% endif %}
+        {% if 'roadmap' in frameworks %}<li><a href="#roadmap">Product Roadmap</a></li>{% endif %}
+        {% if 'okr' in frameworks %}<li><a href="#okr">Objectives & Key Results</a></li>{% endif %}
+    </ul>
+</div>
+{% endif %}
+
+<!-- CSD Matrix -->
+{% if 'csd' in frameworks %}
+<div id="csd" class="section">
+    <h2>CSD Matrix</h2>
+    <div class="csd-grid">
+        <div class="csd-column">
+            <h3>Certainties</h3>
+            <ul>
+                {% for item in csd['Certainty'] %}
+                <li>{{ item.text }}</li>
+                {% else %}
+                <li>No certainties defined</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="csd-column">
+            <h3>Suppositions</h3>
+            <ul>
+                {% for item in csd['Supposition'] %}
+                <li>{{ item.text }}</li>
+                {% else %}
+                <li>No suppositions defined</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="csd-column">
+            <h3>Doubts</h3>
+            <ul>
+                {% for item in csd['Doubt'] %}
+                <li>{{ item.text }}</li>
+                {% else %}
+                <li>No doubts defined</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Product Vision Board -->
+{% if 'pvb' in frameworks %}
+<div id="pvb" class="section">
+    <h2>Product Vision Board</h2>
+    {% if pvb %}
+    <table>
+        <tr>
+            <th colspan="3">Vision</th>
+        </tr>
+        <tr>
+            <td colspan="3">{{ pvb.vision or 'Not defined' }}</td>
+        </tr>
+        <tr>
+            <th>Target Customers</th>
+            <th>Customer Needs</th>
+            <th>Product Features</th>
+        </tr>
+        <tr>
+            <td>{{ pvb.target_customers or 'Not defined' }}</td>
+            <td>{{ pvb.customer_needs or 'Not defined' }}</td>
+            <td>{{ pvb.product_features or 'Not defined' }}</td>
+        </tr>
+        <tr>
+            <th colspan="3">Business Goals</th>
+        </tr>
+        <tr>
+            <td colspan="3">{{ pvb.business_goals or 'Not defined' }}</td>
+        </tr>
+    </table>
+    {% else %}
+    <p>No Product Vision Board data available.</p>
+    {% endif %}
+</div>
+{% endif %}
+
+<!-- Business Model Canvas -->
+{% if 'bmc' in frameworks %}
+<div id="bmc" class="section">
+    <h2>Business Model Canvas</h2>
+    {% if bmc %}
+    <table>
+        <tr>
+            <th width="20%">Key Partners</th>
+            <th width="20%">Key Activities</th>
+            <th width="20%">Value Propositions</th>
+            <th width="20%">Customer Relationships</th>
+            <th width="20%">Customer Segments</th>
+        </tr>
+        <tr>
+            <td>{{ bmc.key_partners or 'Not defined' }}</td>
+            <td>{{ bmc.key_activities or 'Not defined' }}</td>
+            <td>{{ bmc.value_propositions or 'Not defined' }}</td>
+            <td>{{ bmc.customer_relationships or 'Not defined' }}</td>
+            <td>{{ bmc.customer_segments or 'Not defined' }}</td>
+        </tr>
+        <tr>
+            <th>&nbsp;</th>
+            <th>Key Resources</th>
+            <th>&nbsp;</th>
+            <th>Channels</th>
+            <th>&nbsp;</th>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>{{ bmc.key_resources or 'Not defined' }}</td>
+            <td>&nbsp;</td>
+            <td>{{ bmc.channels or 'Not defined' }}</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <th colspan="2">Cost Structure</th>
+            <th colspan="3">Revenue Streams</th>
+        </tr>
+        <tr>
+            <td colspan="2">{{ bmc.cost_structure or 'Not defined' }}</td>
+            <td colspan="3">{{ bmc.revenue_streams or 'Not defined' }}</td>
+        </tr>
+    </table>
+    {% else %}
+    <p>No Business Model Canvas data available.</p>
+    {% endif %}
+</div>
+{% endif %}
+
+<!-- RICE Prioritization -->
+{% if 'rice' in frameworks %}
+<div id="rice" class="section">
+    <h2>RICE Prioritization</h2>
+    {% if rice %}
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Reach</th>
+            <th>Impact</th>
+            <th>Confidence</th>
+            <th>Effort</th>
+            <th>RICE Score</th>
+        </tr>
+        {% for item in rice %}
+        <tr>
+            <td>{{ item.name }}</td>
+            <td>{{ item.description or '-' }}</td>
+            <td>{{ item.reach_score }}</td>
+            <td>{{ item.impact_score }}</td>
+            <td>{{ item.confidence_score }}</td>
+            <td>{{ item.effort_score }}</td>
+            <td>{{ item.rice_score }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p>No RICE prioritization data available.</p>
+    {% endif %}
+</div>
+{% endif %}
+
+<!-- Product Roadmap -->
+{% if 'roadmap' in frameworks %}
+<div id="roadmap" class="section">
+    <h2>Product Roadmap</h2>
+    {% if roadmap %}
+    <table>
+        <tr>
+            <th>Item</th>
+            <th>Description</th>
+            <th>Quarter</th>
+            <th>Year</th>
+            <th>Status</th>
+        </tr>
+        {% for item in roadmap %}
+        <tr>
+            <td>{{ item.name }}</td>
+            <td>{{ item.description or '-' }}</td>
+            <td>{{ item.quarter }}</td>
+            <td>{{ item.year }}</td>
+            <td>{{ item.status }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p>No roadmap data available.</p>
+    {% endif %}
+</div>
+{% endif %}
+
+<!-- Objectives & Key Results -->
+{% if 'okr' in frameworks %}
+<div id="okr" class="section">
+    <h2>Objectives & Key Results</h2>
+    {% if okr %}
+    {% for obj in okr %}
+    <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #ddd;">
+        <h3>{{ obj.objective.title }}</h3>
+        <p>{{ obj.objective.description or '' }}</p>
+        <p><strong>Status:</strong> {{ obj.objective.status }}</p>
+        <p><strong>Progress:</strong> {{ obj.progress }}%</p>
+        <div class="progress-bar">
+            <div class="progress-bar-fill" style="width: {{ obj.progress }}%;"></div>
+        </div>
+        
+        <h4>Key Results:</h4>
+        {% if obj.key_results %}
+        <table>
+            <tr>
+                <th>Key Result</th>
+                <th>Current</th>
+                <th>Target</th>
+                <th>Progress</th>
+            </tr>
+            {% for kr in obj.key_results %}
+            <tr>
+                <td>{{ kr.title }}</td>
+                <td>{{ kr.current_value }}</td>
+                <td>{{ kr.target_value }}</td>
+                <td>
+                    {% set progress = (kr.current_value / kr.target_value * 100) if kr.target_value > 0 else 0 %}
+                    {{ progress|round(1) }}%
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <p>No key results defined for this objective.</p>
+        {% endif %}
+    </div>
+    {% endfor %}
+    {% else %}
+    <p>No OKR data available.</p>
+    {% endif %}
+</div>
+{% endif %}
+
+<div class="footer">
+    <p>Generated by Product Discovery Hub on {{ generated_at }}</p>
+</div>
+
+</body>
+</html> 
