@@ -36,12 +36,10 @@ class RoadmapItemBase(BaseModel):
     quarter: RoadmapQuarter
     year: int = Field(..., ge=2000, le=2100)
     status: RoadmapStatus = RoadmapStatus.PLANNED
-    start_date: Optional[date] = None
-    end_date: Optional[date] = None
     priority: Optional[RoadmapPriority] = RoadmapPriority.MEDIUM
     timeframe: Optional[RoadmapTimeframe] = RoadmapTimeframe.NEXT
     position: Optional[int] = None
-    # content field for frontend compatibility
+    # content field for frontend compatibility (will be mapped to/from name)
     content: Optional[str] = Field(None, max_length=500)
 
 
@@ -66,8 +64,6 @@ class RoadmapItemUpdate(BaseModel):
     quarter: Optional[RoadmapQuarter] = None
     year: Optional[int] = Field(None, ge=2000, le=2100)
     status: Optional[RoadmapStatus] = None
-    start_date: Optional[date] = None
-    end_date: Optional[date] = None
     priority: Optional[RoadmapPriority] = None
     timeframe: Optional[RoadmapTimeframe] = None
     position: Optional[int] = None
@@ -75,4 +71,11 @@ class RoadmapItemUpdate(BaseModel):
 
 
 class RoadmapItemList(BaseModel):
-    items: List[RoadmapItem] 
+    items: List[RoadmapItem]
+
+class RoadmapItemReorder(BaseModel):
+    """
+    Schema for reordering roadmap items through drag and drop
+    """
+    item_ids: List[str] = Field(..., description="Ordered list of roadmap item IDs after reordering")
+    new_category: Optional[str] = Field(None, description="New category if items are dragged to a different column") 
