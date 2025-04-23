@@ -12,6 +12,7 @@ This is the backend for the Product Discovery Hub application, built with FastAP
 - RICE Prioritization
 - Product Roadmap
 - OKRs (Objectives and Key Results)
+- User Personas
 - AI-powered suggestions using OpenRouter API
 - PDF report generation
 
@@ -65,8 +66,18 @@ The following tables should be created in Supabase:
 - `roadmap_items` (linked to `projects.id`)
 - `objectives` (linked to `projects.id`)
 - `key_results` (linked to `objectives.id`)
+- `personas` (linked to `projects.id`)
+- `persona_details` (linked to `personas.id`)
 
 Row Level Security (RLS) policies should be configured for all tables to ensure users can only access their own data.
+
+### Supabase Storage Setup
+
+The application uses Supabase Storage for storing persona photos. You need to create the following bucket:
+
+1. Run the `create_personas_storage.sql` script in the Supabase SQL editor to create:
+   - A `personas` bucket for storing persona photos
+   - Appropriate policies for secure access
 
 ## API Documentation
 

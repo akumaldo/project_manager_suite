@@ -104,6 +104,47 @@ async def get_ai_suggestions(
                 reasoning=f"Generated based on project context for the {prompt.specific_query} section."
             )
             
+        elif prompt.prompt_type == AIPromptType.ROADMAP:
+            if not prompt.specific_query:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Category is required for roadmap suggestions"
+                )
+            
+            # Get existing roadmap items for context
+            existing_items_result = supabase_admin_client.table('roadmap_items').select('name')\
+                .eq('project_id', prompt.project_id)\
+                .eq('user_id', user_id)\
+                .execute()
+            
+            existing_items = [item['name'] for item in existing_items_result.data] if existing_items_result.data else []
+            
+            # Generate roadmap suggestions
+            try:
+                suggestions = await ai_service.generate_roadmap_suggestions(
+                    project_name=project_name,
+                    category=prompt.specific_query,
+                    context=prompt.context,
+                    current_items=existing_items
+                )
+                
+                return AISuggestion(
+                    suggestions=suggestions,
+                    reasoning=f"Generated roadmap suggestions for {prompt.specific_query} based on project context."
+                )
+            except Exception as e:
+                logger.error(f"Error generating roadmap suggestions: {str(e)}")
+                # Fallback to simple suggestions
+                fallback_suggestions = [
+                    f"Implement core {prompt.specific_query} features for {project_name}",
+                    f"Research {prompt.specific_query} market trends for {project_name}",
+                    f"Create {prompt.specific_query} prototypes for {project_name}"
+                ]
+                return AISuggestion(
+                    suggestions=fallback_suggestions,
+                    reasoning="Generated using fallback mechanism due to AI service error."
+                )
+            
         elif prompt.prompt_type == AIPromptType.OKR:
             if prompt.specific_query == "objective":
                 suggestions = await ai_service.generate_okr_objective_suggestions(
@@ -141,6 +182,24 @@ async def get_ai_suggestions(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail="Invalid specific_query for OKR prompt"
                 )
+        
+        elif prompt.prompt_type == AIPromptType.PERSONA:
+            if not prompt.category:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Category is required for persona suggestions"
+                )
+                
+            suggestions = await ai_service.generate_persona_suggestions(
+                project_name=project_name,
+                category=prompt.category,
+                context=prompt.context
+            )
+            
+            return AISuggestion(
+                suggestions=suggestions,
+                reasoning=f"Generated {prompt.category.lower()} suggestions for user persona in {project_name}."
+            )
         
         else:
             # Handle other prompt types

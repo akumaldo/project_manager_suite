@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field
 from typing import List, Optional
 from enum import Enum
 from schemas.csd import CSDCategory
+from schemas.personas import PersonaDetailCategory
 
 
 class AIPromptType(str, Enum):
@@ -11,6 +12,7 @@ class AIPromptType(str, Enum):
     RICE = "rice"
     ROADMAP = "roadmap"
     OKR = "okr"
+    PERSONA = "persona"
 
 
 class AIPrompt(BaseModel):
@@ -21,6 +23,9 @@ class AIPrompt(BaseModel):
     
     # For CSD specifically
     category: Optional[CSDCategory] = None
+    
+    # For PERSONA
+    persona_category: Optional[PersonaDetailCategory] = None
 
 
 class AISuggestion(BaseModel):

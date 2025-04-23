@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager
 import traceback
 
 from config import settings
-from routers import projects, csd, pvb, bmc, rice, roadmap, okr, ai, reports
+from routers import projects, csd, pvb, bmc, rice, roadmap, okr, ai, reports, personas, storage
 from auth import router as auth_router
 
 # Configure logging
@@ -84,6 +84,8 @@ app.include_router(roadmap.router, prefix="/api", tags=["roadmap"])
 app.include_router(okr.router, prefix="/api", tags=["okr"])
 app.include_router(ai.router, prefix="/api", tags=["ai"])
 app.include_router(reports.router, prefix="/api", tags=["reports"])
+app.include_router(personas.router, prefix="/api", tags=["personas"])
+app.include_router(storage.router, prefix="/api/storage", tags=["storage"])
 
 @app.get("/api/health")
 async def health_check():

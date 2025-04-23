@@ -232,6 +232,56 @@ CREATE POLICY "Users can delete their own roadmap items"
 ON roadmap_items FOR DELETE 
 USING (auth.uid() = user_id);
 
+-- Create policies for objectives table
+CREATE POLICY "Users can view their own objectives" 
+ON objectives FOR SELECT 
+USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert their own objectives" 
+ON objectives FOR INSERT 
+WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update their own objectives" 
+ON objectives FOR UPDATE 
+USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete their own objectives" 
+ON objectives FOR DELETE 
+USING (auth.uid() = user_id);
+
+-- Create policies for key_results table through objectives relationship
+CREATE POLICY "Users can view their own key results" 
+ON key_results FOR SELECT 
+USING (EXISTS (
+    SELECT 1 FROM objectives 
+    WHERE objectives.id = key_results.objective_id 
+    AND objectives.user_id = auth.uid()
+));
+
+CREATE POLICY "Users can insert their own key results" 
+ON key_results FOR INSERT 
+WITH CHECK (EXISTS (
+    SELECT 1 FROM objectives 
+    WHERE objectives.id = key_results.objective_id 
+    AND objectives.user_id = auth.uid()
+));
+
+CREATE POLICY "Users can update their own key results" 
+ON key_results FOR UPDATE 
+USING (EXISTS (
+    SELECT 1 FROM objectives 
+    WHERE objectives.id = key_results.objective_id 
+    AND objectives.user_id = auth.uid()
+));
+
+CREATE POLICY "Users can delete their own key results" 
+ON key_results FOR DELETE 
+USING (EXISTS (
+    SELECT 1 FROM objectives 
+    WHERE objectives.id = key_results.objective_id 
+    AND objectives.user_id = auth.uid()
+));
+
 -- Create indices for performance
 CREATE INDEX IF NOT EXISTS idx_projects_user_id ON projects(user_id);
 CREATE INDEX IF NOT EXISTS idx_csd_items_project_id ON csd_items(project_id);
